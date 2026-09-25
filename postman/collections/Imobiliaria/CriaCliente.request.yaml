@@ -1,0 +1,20 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/clientes
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nome_cliente\": \"Arthur Moreira\",\r
+
+    \  \"cpf\": \"12345678901\",\r
+
+    \  \"telefone\": \"98987654321\",\r
+
+    \  \"email\": \"arthur@email.com\",\r
+
+    \  \"dt_nascimento\": \"2000-05-15\"\r
+
+    }"
+order: 1790361653310
