@@ -1,16 +1,19 @@
 package ifma.edu.br.imobiliariasystem.domain.model;
 
+import ifma.edu.br.imobiliariasystem.domain.ValidationGroups;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity 
+@Entity
 @Table(name = "clientes")
 public class Cliente {
-    
-    @Id 
+
+    //Só exigido quando o cliente vem dentro de uma locação (grupo ClienteId)
+    @NotNull(groups = ValidationGroups.ClienteId.class, message = "O id do inquilino é obrigatório")
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
