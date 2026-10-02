@@ -13,4 +13,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 
     //Usado na atualização para ver se existe OUTRO cliente (id diferente) com esse cpf
     boolean existsByCpfAndIdNot(String cpf, Integer id);
+
+    //Mesma ideia do cpf, aplicada ao email
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailAndIdNot(String email, Integer id);
 }

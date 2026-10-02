@@ -40,7 +40,7 @@ public class Cliente {
 
     public Cliente() {}
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

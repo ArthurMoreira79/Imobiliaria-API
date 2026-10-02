@@ -26,7 +26,7 @@ public class ClienteService {
     @Transactional(readOnly = true)
     public Cliente buscarPorId(Integer id) {
         return clienteRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente de id " + id + "não encontrado"));
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente de id " + id + " não encontrado"));
     }
 
     @Transactional
@@ -36,6 +36,11 @@ public class ClienteService {
 
         if (clienteRepository.existsByCpf(cliente.getCpf())) {
             throw new RegraNegocioException("Já existe um cliente cadastrado com este CPF");
+        }
+
+        //email é opcional: só verifica quando vier preenchido
+        if (cliente.getEmail() != null && clienteRepository.existsByEmail(cliente.getEmail())) {
+            throw new RegraNegocioException("Já existe um cliente cadastrado com este e-mail");
         }
 
         return clienteRepository.save(cliente);
@@ -49,6 +54,11 @@ public class ClienteService {
         //Ignora o próprio cliente na verificação de CPF duplicado
         if (clienteRepository.existsByCpfAndIdNot(dadosAtualizados.getCpf(), id)) {
             throw new RegraNegocioException("Já existe outro cliente cadastrado com este CPF");
+        }
+
+        if (dadosAtualizados.getEmail() != null
+                && clienteRepository.existsByEmailAndIdNot(dadosAtualizados.getEmail(), id)) {
+            throw new RegraNegocioException("Já existe outro cliente cadastrado com este e-mail");
         }
 
         //Com o id definido, o save faz UPDATE do registro certo
