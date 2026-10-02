@@ -1,0 +1,19 @@
+$kind: http-request
+description: ""
+url: http://localhost:8080/imoveis
+method: POST
+body:
+  type: json
+  content: |
+    {
+      "tipo_imovel": "Apartamento",
+      "endereco": "Rua das Palmeiras, 120, Renascença",
+      "cep": "65075000",
+      "dormitorios": 3,
+      "banheiros": 2,
+      "suites": 1,
+      "metragem": 85,
+      "valor_aluguel_sug": 2500.00,
+      "obs": "Próximo ao shopping"
+    }
+order: 1790361653320
