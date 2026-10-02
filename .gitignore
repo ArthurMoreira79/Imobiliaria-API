@@ -33,3 +33,6 @@ build/
 .vscode/
 
 .env
+
+# Instruções locais do Claude Code (não versionar)
+CLAUDE.md
