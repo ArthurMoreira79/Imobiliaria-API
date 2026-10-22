@@ -1,0 +1,23 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/alugueis'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "locacao": {
+        "id": 3
+      },
+      "dt_vencimento": "2027-01-20",
+      "valor_pago": null
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      pm.test("Aluguel 3", () => pm.expect(pm.response.json().id).to.eql(3));

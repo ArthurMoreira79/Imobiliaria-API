@@ -1,0 +1,18 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/alugueis/2'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "locacao": {
+        "id": 2
+      },
+      "dt_vencimento": "2026-11-10",
+      "valor_pago": 9600,
+      "obs": "Pago"
+    }

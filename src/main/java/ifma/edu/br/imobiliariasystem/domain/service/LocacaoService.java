@@ -7,6 +7,9 @@ import ifma.edu.br.imobiliariasystem.domain.repository.LocacaoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -38,18 +41,20 @@ public class LocacaoService {
         //garante INSERT: se o JSON trouxer um id, o save faria UPDATE em outra locação
         locacao.setId(null);
 
-        //toda locação nasce ativa, a menos que o JSON diga o contrário
+        //ativo = confirmada. Se o JSON não disser nada, a locação já nasce confirmada
         if (locacao.getAtivo() == null) {
             locacao.setAtivo(true);
         }
 
         carregarRelacionamentos(locacao);
-        validarRegras(locacao);
+        validarPeriodo(locacao);
 
-        if (locacao.getAtivo() && locacaoRepository.existsByImovel_IdAndAtivoTrue(locacao.getImovel().getId())) {
-            throw new RegraNegocioException("O imóvel de id " + locacao.getImovel().getId() + " já possui uma locação ativa");
+        //Só locações confirmadas ocupam o imóvel
+        if (locacao.getAtivo()) {
+            verificarDisponibilidade(locacao, null);
         }
 
+        calcularValorTotal(locacao);
         return locacaoRepository.save(locacao);
     }
 
@@ -64,17 +69,46 @@ public class LocacaoService {
         }
 
         carregarRelacionamentos(dadosAtualizados);
-        validarRegras(dadosAtualizados);
+        validarPeriodo(dadosAtualizados);
 
-        //Ignora a própria locação na verificação de imóvel já alugado
-        if (dadosAtualizados.getAtivo()
-                && locacaoRepository.existsByImovel_IdAndAtivoTrueAndIdNot(dadosAtualizados.getImovel().getId(), id)) {
-            throw new RegraNegocioException("O imóvel de id " + dadosAtualizados.getImovel().getId() + " já possui outra locação ativa");
+        //Ignora a própria locação na verificação de conflito
+        if (dadosAtualizados.getAtivo()) {
+            verificarDisponibilidade(dadosAtualizados, id);
         }
+
+        //Datas ou imóvel podem ter mudado: recalcula com a diária atual do imóvel
+        calcularValorTotal(dadosAtualizados);
 
         //Com o id definido, o save faz UPDATE do registro certo
         dadosAtualizados.setId(id);
         return locacaoRepository.save(dadosAtualizados);
+    }
+
+    //PUT /locacoes/{id}/confirmar: transforma uma locação pendente em confirmada
+    @Transactional
+    public Locacao confirmar(Integer id) {
+        Locacao locacao = buscarPorId(id);
+
+        if (locacao.getAtivo()) {
+            throw new RegraNegocioException("A locação de id " + id + " já está confirmada");
+        }
+
+        verificarDisponibilidade(locacao, id);
+        locacao.setAtivo(true);
+        return locacaoRepository.save(locacao);
+    }
+
+    //PUT /locacoes/{id}/cancelar: libera o período do imóvel
+    @Transactional
+    public Locacao cancelar(Integer id) {
+        Locacao locacao = buscarPorId(id);
+
+        if (!locacao.getAtivo()) {
+            throw new RegraNegocioException("A locação de id " + id + " já está cancelada");
+        }
+
+        locacao.setAtivo(false);
+        return locacaoRepository.save(locacao);
     }
 
     @Transactional
@@ -95,11 +129,37 @@ public class LocacaoService {
         locacao.setImovel(imovelService.buscarPorId(locacao.getImovel().getId()));
     }
 
-    //Regras que comparam mais de um campo
-    private void validarRegras(Locacao locacao) {
-        if (locacao.getData_fim() != null && !locacao.getData_fim().isAfter(locacao.getData_inicio())) {
+    //A data final precisa ser posterior à inicial: senão a quantidade de diárias seria 0 ou negativa
+    private void validarPeriodo(Locacao locacao) {
+        if (!locacao.getData_fim().isAfter(locacao.getData_inicio())) {
             throw new RegraNegocioException("A data de fim (" + locacao.getData_fim()
                     + ") deve ser posterior à data de início (" + locacao.getData_inicio() + ")");
         }
+    }
+
+    //Rejeita a operação se outra locação confirmada ocupa o imóvel em parte do período
+    private void verificarDisponibilidade(Locacao locacao, Integer idIgnorado) {
+        List<Locacao> conflitos = locacaoRepository.buscarConflitos(
+                locacao.getImovel().getId(), locacao.getData_inicio(), locacao.getData_fim(), idIgnorado);
+
+        if (!conflitos.isEmpty()) {
+            Locacao conflito = conflitos.get(0);
+            throw new RegraNegocioException("O imóvel de id " + locacao.getImovel().getId()
+                    + " não está disponível de " + locacao.getData_inicio() + " a " + locacao.getData_fim()
+                    + ": já existe a locação confirmada de id " + conflito.getId()
+                    + " de " + conflito.getData_inicio() + " a " + conflito.getData_fim());
+        }
+    }
+
+    //valor_total = valor_diaria do imóvel x quantidade de diárias.
+    //Diárias = dias entre início e fim (o dia de saída não é cobrado, como num hotel)
+    private void calcularValorTotal(Locacao locacao) {
+        long diarias = ChronoUnit.DAYS.between(locacao.getData_inicio(), locacao.getData_fim());
+
+        BigDecimal total = locacao.getImovel().getValor_diaria()
+                .multiply(BigDecimal.valueOf(diarias))
+                .setScale(2, RoundingMode.HALF_EVEN);
+
+        locacao.setValor_total(total);
     }
 }

@@ -1,0 +1,13 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/busca?dormitorios=2'
+order: 5000
+queryParams:
+  - key: dormitorios
+    value: '2'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Ids 4, 8", () => pm.expect(pm.response.json().content.map(i => i.id)).to.eql([4, 8]));

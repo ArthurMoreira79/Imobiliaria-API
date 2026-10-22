@@ -6,6 +6,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
 
 import java.net.URI;
 import java.util.List;
@@ -24,6 +27,24 @@ public class ImovelController {
     @GetMapping 
     public ResponseEntity<List<Imovel>> listarTodos() {
         return ResponseEntity.ok(imovelService.listarTodos());
+    }
+    
+    //GET /imoveis/paginado?page=0&size=5&sort=metragem,desc -> 200
+    //O Spring monta o Pageable a partir dos parâmetros page, size e sort da URL.
+    //@PageableDefault vale quando eles não são informados
+    @GetMapping("/paginado")
+    public ResponseEntity<PagedModel<Imovel>> buscarPaginado(@PageableDefault(size = 5, sort = "id") Pageable pageable) {
+        return ResponseEntity.ok(new PagedModel<>(imovelService.buscarPaginado(pageable)));
+    }
+
+    //GET /imoveis/busca?tipo=casa&cidade=luis&dormitorios=3 -> 200
+    //Todos os filtros são opcionais; também aceita page, size e sort
+    @GetMapping("/busca")
+    public ResponseEntity<PagedModel<Imovel>> pesquisar(@RequestParam(required = false) String tipo,
+                                                        @RequestParam(required = false) String cidade,
+                                                        @RequestParam(required = false) Integer dormitorios,
+                                                        @PageableDefault(size = 5, sort = "id") Pageable pageable) {
+        return ResponseEntity.ok(new PagedModel<>(imovelService.pesquisarPorExemplo(tipo, cidade, dormitorios, pageable)));
     }
 
     //GET /imoveis/{id} -> 200 ou 404

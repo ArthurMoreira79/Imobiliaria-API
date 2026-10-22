@@ -32,6 +32,11 @@ public class Imovel {
     @Column(nullable = false, length = 10)
     private String cep;
 
+    @NotBlank(message = "A cidade é obrigatória")
+    @Size(max = 100, message = "A cidade deve ter no máximo 100 caracteres")
+    @Column(nullable = false, length = 100)
+    private String cidade;
+
     @NotNull(message = "O número de dormitórios é obrigatório")
     @PositiveOrZero(message = "O número de dormitórios não pode ser negativo")
     @Column(nullable = false)
@@ -51,6 +56,13 @@ public class Imovel {
     @Positive(message = "A metragem deve ser maior que zero")
     @Column(nullable = false)
     private Integer metragem;
+
+    //Base do cálculo automático do valor da locação (valor_diaria x quantidade de diárias)
+    @NotNull(message = "O valor da diária é obrigatório")
+    @Positive(message = "O valor da diária deve ser maior que zero")
+    @Digits(integer = 10, fraction = 2, message = "A diária deve ter no máximo 10 dígitos inteiros e 2 casas decimais")
+    @Column(name = "valor_diaria", nullable = false, precision = 12, scale = 2)
+    private BigDecimal valor_diaria;
 
     @Positive(message = "O valor sugerido do aluguel deve ser maior que zero")
     @Digits(integer = 10, fraction = 2, message = "O valor deve ter no máximo 10 dígitos inteiros e 2 casas decimais")
@@ -143,6 +155,22 @@ public class Imovel {
         this.obs = obs;
     }
 
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public BigDecimal getValor_diaria() {
+        return valor_diaria;
+    }
+
+    public void setValor_diaria(BigDecimal valor_diaria) {
+        this.valor_diaria = valor_diaria;
+    }
+
     @Override 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -161,10 +189,12 @@ public class Imovel {
         ", tipo = " + tipo_imovel +
         ", endereco = " + endereco +
         ", cep = " + cep +
+        ", cidade = " + cidade +
         ", dormitorios = " + dormitorios +
         ", banheiros = " + banheiros +
         ", suites = " + suites +
         ", metragem = " + metragem +
+        ", valor da diária = " + valor_diaria +
         ", valor sugerido = " + valor_aluguel_sug + ")";
     }
 }

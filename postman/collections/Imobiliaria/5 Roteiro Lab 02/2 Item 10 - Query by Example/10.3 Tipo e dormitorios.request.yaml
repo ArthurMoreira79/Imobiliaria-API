@@ -1,0 +1,15 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/busca?tipo=casa&dormitorios=4'
+order: 3000
+queryParams:
+  - key: tipo
+    value: 'casa'
+  - key: dormitorios
+    value: '4'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Ids 2, 7", () => pm.expect(pm.response.json().content.map(i => i.id)).to.eql([2, 7]));

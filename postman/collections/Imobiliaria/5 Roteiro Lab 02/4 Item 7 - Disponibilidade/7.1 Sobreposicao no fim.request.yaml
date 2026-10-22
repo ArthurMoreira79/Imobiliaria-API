@@ -1,0 +1,27 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/locacoes'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 3
+      },
+      "imovel": {
+        "id": 2
+      },
+      "data_inicio": "2026-12-20",
+      "data_fim": "2027-01-05",
+      "dia_vencimento": 10
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 409", () => pm.response.to.have.status(409));
+      pm.test("Mensagem contém: locação confirmada de id 2", () => pm.expect(pm.response.json().mensagem).to.include("locação confirmada de id 2"));

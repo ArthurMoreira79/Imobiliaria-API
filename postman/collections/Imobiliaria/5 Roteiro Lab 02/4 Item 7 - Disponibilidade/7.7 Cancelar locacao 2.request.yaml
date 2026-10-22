@@ -1,0 +1,10 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/2/cancelar'
+order: 7000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Cancelada", () => pm.expect(pm.response.json().ativo).to.eql(false));

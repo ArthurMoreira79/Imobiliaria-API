@@ -1,0 +1,18 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/alugueis'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "locacao": {
+        "id": 3
+      },
+      "dt_vencimento": "2027-01-20",
+      "valor_pago": null,
+      "obs": "Primeira parcela"
+    }

@@ -1,0 +1,29 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/locacoes'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 2
+      },
+      "imovel": {
+        "id": 3
+      },
+      "data_inicio": "2026-12-01",
+      "data_fim": "2026-12-03",
+      "dia_vencimento": 10,
+      "valor_total": 1
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      pm.test("Locação 6", () => pm.expect(pm.response.json().id).to.eql(6));
+      pm.test("Ignorou o 1 e calculou 180,00", () => pm.expect(pm.response.json().valor_total).to.eql(180));

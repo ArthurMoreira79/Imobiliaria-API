@@ -1,0 +1,23 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/imoveis/1'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "tipo_imovel": "Apartamento",
+      "endereco": "Av. Litorânea, 500, Calhau",
+      "cep": "65071377",
+      "cidade": "São Luís",
+      "dormitorios": 3,
+      "banheiros": 2,
+      "suites": 1,
+      "metragem": 100,
+      "valor_diaria": 260,
+      "valor_aluguel_sug": 3500,
+      "obs": "Vista para o mar"
+    }

@@ -1,0 +1,27 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/5'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 1
+      },
+      "imovel": {
+        "id": 3
+      },
+      "data_inicio": "2026-11-01",
+      "data_fim": "2026-11-21",
+      "dia_vencimento": 10
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("20 diárias x 90,00 = 1800,00", () => pm.expect(pm.response.json().valor_total).to.eql(1800));

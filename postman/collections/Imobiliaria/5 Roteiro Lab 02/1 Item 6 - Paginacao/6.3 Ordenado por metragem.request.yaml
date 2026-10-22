@@ -1,0 +1,17 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/paginado?page=0&size=3&sort=metragem,desc'
+order: 3000
+queryParams:
+  - key: page
+    value: '0'
+  - key: size
+    value: '3'
+  - key: sort
+    value: 'metragem,desc'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Ids 7, 2, 5", () => pm.expect(pm.response.json().content.map(i => i.id)).to.eql([7, 2, 5]));

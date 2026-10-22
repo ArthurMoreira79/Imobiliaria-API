@@ -1,0 +1,11 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/paginado?page=0&size=5&sort=metragem,desc'
+order: 3000
+queryParams:
+  - key: page
+    value: '0'
+  - key: size
+    value: '5'
+  - key: sort
+    value: 'metragem,desc'

@@ -1,0 +1,23 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/locacoes'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 1
+      },
+      "imovel": {
+        "id": 5
+      },
+      "data_inicio": "2026-11-01",
+      "data_fim": "2026-11-30",
+      "dia_vencimento": 10,
+      "perc_multa": 2,
+      "obs": "Locação de novembro"
+    }

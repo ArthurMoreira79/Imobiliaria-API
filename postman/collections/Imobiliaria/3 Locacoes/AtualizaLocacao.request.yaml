@@ -1,0 +1,23 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/1'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 1
+      },
+      "imovel": {
+        "id": 1
+      },
+      "data_inicio": "2026-01-05",
+      "data_fim": "2026-03-10",
+      "dia_vencimento": 10,
+      "perc_multa": 2,
+      "obs": "Locação encerrada, prorrogada 5 dias"
+    }

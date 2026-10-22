@@ -1,0 +1,10 @@
+$kind: http-request
+method: DELETE
+url: '{{baseUrl}}/imoveis/1'
+order: 2000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 409", () => pm.response.to.have.status(409));
+      pm.test("Bloqueado pela FK", () => pm.expect(pm.response.json().titulo).to.eql("Conflito de integridade"));

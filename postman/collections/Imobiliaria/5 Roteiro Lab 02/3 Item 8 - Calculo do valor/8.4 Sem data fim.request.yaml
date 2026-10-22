@@ -1,0 +1,26 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/locacoes'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 1
+      },
+      "imovel": {
+        "id": 3
+      },
+      "data_inicio": "2026-11-01",
+      "dia_vencimento": 10
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 400", () => pm.response.to.have.status(400));
+      pm.test("Campo data_fim", () => pm.expect(pm.response.json().campos.map(c => c.nome)).to.eql(["data_fim"]));

@@ -1,1 +1,6 @@
 $kind: collection
+name: 'Imobiliaria'
+description: 'API REST da imobiliária (Labs 01 e 02 de Desenvolvimento Web II). Antes do roteiro, recrie o banco para os ids baterem.'
+variables:
+  - key: baseUrl
+    value: 'http://localhost:8080'

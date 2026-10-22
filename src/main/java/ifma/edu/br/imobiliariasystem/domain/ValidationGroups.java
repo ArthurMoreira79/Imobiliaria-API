@@ -9,4 +9,6 @@ public interface ValidationGroups {
     interface ClienteId {}
 
     interface ImovelId {}
+
+    interface LocacaoId {}
 }

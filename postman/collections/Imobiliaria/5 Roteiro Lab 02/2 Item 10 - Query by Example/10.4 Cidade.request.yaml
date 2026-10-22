@@ -1,0 +1,13 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/busca?cidade=imperatriz'
+order: 4000
+queryParams:
+  - key: cidade
+    value: 'imperatriz'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Ids 5, 6", () => pm.expect(pm.response.json().content.map(i => i.id)).to.eql([5, 6]));

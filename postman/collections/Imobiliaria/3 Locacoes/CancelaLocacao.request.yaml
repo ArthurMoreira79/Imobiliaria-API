@@ -1,0 +1,4 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/3/cancelar'
+order: 6000

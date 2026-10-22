@@ -1,0 +1,13 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/busca?cidade=LUIS'
+order: 2000
+queryParams:
+  - key: cidade
+    value: 'LUIS'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Ids 1, 2, 3, 4", () => pm.expect(pm.response.json().content.map(i => i.id)).to.eql([1, 2, 3, 4]));

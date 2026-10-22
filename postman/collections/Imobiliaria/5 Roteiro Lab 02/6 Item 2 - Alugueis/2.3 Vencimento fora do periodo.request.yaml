@@ -1,0 +1,22 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/alugueis'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "locacao": {
+        "id": 3
+      },
+      "dt_vencimento": "2027-05-01"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 409", () => pm.response.to.have.status(409));
+      pm.test("Mensagem contém: dentro do período", () => pm.expect(pm.response.json().mensagem).to.include("dentro do período"));

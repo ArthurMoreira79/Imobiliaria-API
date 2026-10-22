@@ -1,0 +1,23 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/imoveis'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "tipo_imovel": "Apartamento",
+      "endereco": "Rua das Palmeiras, 120, Renascença",
+      "cep": "65075000",
+      "cidade": "São Luís",
+      "dormitorios": 3,
+      "banheiros": 2,
+      "suites": 1,
+      "metragem": 85,
+      "valor_diaria": 230,
+      "valor_aluguel_sug": 2500,
+      "obs": "Próximo ao shopping"
+    }

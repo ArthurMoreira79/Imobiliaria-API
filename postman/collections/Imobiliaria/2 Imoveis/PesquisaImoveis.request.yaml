@@ -1,0 +1,11 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/busca?tipo=casa&cidade=luis&dormitorios=4'
+order: 4000
+queryParams:
+  - key: tipo
+    value: 'casa'
+  - key: cidade
+    value: 'luis'
+  - key: dormitorios
+    value: '4'

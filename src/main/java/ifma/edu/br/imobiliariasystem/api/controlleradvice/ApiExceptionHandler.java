@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.data.core.PropertyReferenceException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,6 +47,13 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErroResposta> tratarTipoParametro(MethodArgumentTypeMismatchException ex) {
         return montarResposta(HttpStatus.BAD_REQUEST, "Parâmetro inválido",
                 "O parâmetro '" + ex.getName() + "' recebeu o valor '" + ex.getValue() + "', que não é do tipo esperado.", null);
+    }
+
+    // 400 - ordenação por um campo que não existe (ex: GET /imoveis/paginado?sort=preco)
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ErroResposta> tratarOrdenacaoInvalida(PropertyReferenceException ex) {
+        return montarResposta(HttpStatus.BAD_REQUEST, "Ordenação inválida",
+                "Não é possível ordenar por '" + ex.getPropertyName() + "': o campo não existe.", null);
     }
 
     // 404 - registro não encontrado

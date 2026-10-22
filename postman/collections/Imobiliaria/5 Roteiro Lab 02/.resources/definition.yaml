@@ -1,0 +1,4 @@
+$kind: collection
+name: '5 Roteiro Lab 02'
+order: 5000
+description: 'Requisições na ordem do vídeo, com testes automáticos. Rode com o banco recém-criado (DROP + CREATE DATABASE), em sequência: os ids dependem da ordem.'

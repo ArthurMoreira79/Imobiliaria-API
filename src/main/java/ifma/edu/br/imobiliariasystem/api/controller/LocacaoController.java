@@ -57,4 +57,16 @@ public class LocacaoController {
         locacaoService.excluir(id);
         return ResponseEntity.noContent().build();
     }
+
+    //PUT /locacoes/{id}/confirmar -> 200, 404 ou 409 (período ocupado ou já confirmada)
+    @PutMapping("/{id}/confirmar")
+    public ResponseEntity<Locacao> confirmar(@PathVariable Integer id) {
+        return ResponseEntity.ok(locacaoService.confirmar(id));
+    }
+
+    //PUT /locacoes/{id}/cancelar -> 200, 404 ou 409 (já cancelada)
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<Locacao> cancelar(@PathVariable Integer id) {
+        return ResponseEntity.ok(locacaoService.cancelar(id));
+    }
 }

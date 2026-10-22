@@ -1,0 +1,23 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/alugueis/2'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "locacao": {
+        "id": 2
+      },
+      "dt_vencimento": "2026-11-10",
+      "valor_pago": 9600
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Pago", () => pm.expect(pm.response.json().valor_pago).to.eql(9600));

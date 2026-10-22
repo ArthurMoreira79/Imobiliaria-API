@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import jakarta.validation.groups.ConvertGroup;
 import jakarta.validation.groups.Default;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ import java.util.Objects;
 @Table(name = "locacao")
 public class Locacao {
 
+    @NotNull(groups = ValidationGroups.LocacaoId.class, message = "O id da locação é obrigatório")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -43,7 +45,9 @@ public class Locacao {
     @Column(name = "data_inicio", nullable = false)
     private LocalDate data_inicio;
 
-    @Column(name = "data_fim")
+    //Obrigatória: sem ela não dá para calcular a quantidade de diárias
+    @NotNull(message = "A data final é obrigatória")
+    @Column(name = "data_fim", nullable = false)
     private LocalDate data_fim;
 
     @NotNull(message = "O dia de vencimento é obrigatório")
@@ -58,11 +62,11 @@ public class Locacao {
     @Column(name = "perc_multa", precision = 5, scale = 2)
     private BigDecimal perc_multa;
 
-    @NotNull(message = "O valor do aluguel é obrigatório")
-    @Positive(message = "O valor do aluguel deve ser maior que zero")
-    @Digits(integer = 10, fraction = 2, message = "O valor deve ter no máximo 10 dígitos inteiros e 2 casas decimais")
-    @Column(name = "valor_aluguel", nullable = false, precision = 12, scale = 2)
-    private BigDecimal valor_aluguel;
+    //Calculado pelo service (valor_diaria do imóvel x quantidade de diárias).
+    //READ_ONLY: aparece na resposta, mas o Jackson ignora se vier no JSON da requisição
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @Column(name = "valor_total", nullable = false, precision = 12, scale = 2)
+    private BigDecimal valor_total;
 
     @Size(max = 500, message = "A observação deve ter no máximo 500 caracteres")
     @Column(length = 500)
@@ -134,12 +138,12 @@ public class Locacao {
         this.perc_multa = perc_multa;
     }
 
-    public BigDecimal getValor_aluguel() {
-        return valor_aluguel;
+    public BigDecimal getValor_total() {
+        return valor_total;
     }
 
-    public void setValor_aluguel(BigDecimal valor_aluguel) {
-        this.valor_aluguel = valor_aluguel;
+    public void setValor_total(BigDecimal valor_total) {
+        this.valor_total = valor_total;
     }
 
     public String getObs() {
@@ -172,6 +176,6 @@ public class Locacao {
         ", inicio = " + data_inicio +
         ", fim = " + data_fim +
         ", vencimento = dia " + dia_vencimento +
-        ", valor = " + valor_aluguel + ")";
+        ", valor = " + valor_total + ")";
     }
 }

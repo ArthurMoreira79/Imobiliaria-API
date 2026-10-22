@@ -1,0 +1,13 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis/paginado?sort=preco'
+order: 5000
+queryParams:
+  - key: sort
+    value: 'preco'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 400", () => pm.response.to.have.status(400));
+      pm.test("Mensagem contém: ordenar por 'preco'", () => pm.expect(pm.response.json().mensagem).to.include("ordenar por 'preco'"));

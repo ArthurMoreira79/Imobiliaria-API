@@ -1,0 +1,17 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/clientes/1'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nome_cliente": "Ana Beatriz Souza",
+      "cpf": "30111122233",
+      "telefone": "98999990000",
+      "email": "ana.souza@exemplo.com",
+      "dt_nascimento": "1988-03-12"
+    }

@@ -1,0 +1,17 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/clientes'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "nome_cliente": "Arthur Moreira",
+      "cpf": "12345678901",
+      "telefone": "98987654321",
+      "email": "arthur@email.com",
+      "dt_nascimento": "2000-05-15"
+    }
