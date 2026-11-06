@@ -1,10 +1,13 @@
 $kind: http-request
 method: PUT
-url: '{{baseUrl}}/locacoes/9/confirmar'
+url: "{{baseUrl}}/locacoes/9/confirmar"
+body:
+  type: json
+  content: ""
 order: 6000
 scripts:
   - type: afterResponse
-    language: text/javascript
     code: |-
       pm.test("Status 409", () => pm.response.to.have.status(409));
       pm.test("Mensagem contém: locação confirmada de id 2", () => pm.expect(pm.response.json().mensagem).to.include("locação confirmada de id 2"));
+    language: text/javascript
