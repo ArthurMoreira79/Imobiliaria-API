@@ -1,4 +1,4 @@
 $kind: http-request
 method: DELETE
-url: '{{baseUrl}}/clientes/5'
+url: "{{baseUrl}}/clientes/6"
 order: 5000

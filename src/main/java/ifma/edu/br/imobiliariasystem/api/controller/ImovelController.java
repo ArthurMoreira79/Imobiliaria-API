@@ -1,78 +1,94 @@
 package ifma.edu.br.imobiliariasystem.api.controller;
 
+import ifma.edu.br.imobiliariasystem.api.dto.ImovelFiltro;
+import ifma.edu.br.imobiliariasystem.api.dto.ImovelInput;
+import ifma.edu.br.imobiliariasystem.api.dto.ImovelOutput;
+import ifma.edu.br.imobiliariasystem.api.mapper.ImovelMapper;
 import ifma.edu.br.imobiliariasystem.domain.model.Imovel;
 import ifma.edu.br.imobiliariasystem.domain.service.ImovelService;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
 
-@RestController 
+@RestController
 @RequestMapping("/imoveis")
 public class ImovelController {
-    
-    private final ImovelService imovelService;
 
-    public ImovelController(ImovelService imovelService) {
+    private final ImovelService imovelService;
+    private final ImovelMapper imovelMapper;
+
+    public ImovelController(ImovelService imovelService, ImovelMapper imovelMapper) {
         this.imovelService = imovelService;
+        this.imovelMapper = imovelMapper;
     }
 
     //GET /imoveis -> 200
-    @GetMapping 
-    public ResponseEntity<List<Imovel>> listarTodos() {
-        return ResponseEntity.ok(imovelService.listarTodos());
+    @GetMapping
+    public ResponseEntity<List<ImovelOutput>> listarTodos() {
+        List<ImovelOutput> imoveis = imovelService.listarTodos()
+                .stream()
+                .map(imovelMapper::toOutput)
+                .toList();
+        return ResponseEntity.ok(imoveis);
     }
-    
+
     //GET /imoveis/paginado?page=0&size=5&sort=metragem,desc -> 200
-    //O Spring monta o Pageable a partir dos parâmetros page, size e sort da URL.
-    //@PageableDefault vale quando eles não são informados
     @GetMapping("/paginado")
-    public ResponseEntity<PagedModel<Imovel>> buscarPaginado(@PageableDefault(size = 5, sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(new PagedModel<>(imovelService.buscarPaginado(pageable)));
+    public ResponseEntity<PagedModel<ImovelOutput>> buscarPaginado(
+            @PageableDefault(size = 5, sort = "id") Pageable pageable) {
+        Page<ImovelOutput> pagina = imovelService.buscarPaginado(pageable)
+                .map(imovelMapper::toOutput);
+        return ResponseEntity.ok(new PagedModel<>(pagina));
     }
 
     //GET /imoveis/busca?tipo=casa&cidade=luis&dormitorios=3 -> 200
     //Todos os filtros são opcionais; também aceita page, size e sort
     @GetMapping("/busca")
-    public ResponseEntity<PagedModel<Imovel>> pesquisar(@RequestParam(required = false) String tipo,
-                                                        @RequestParam(required = false) String cidade,
-                                                        @RequestParam(required = false) Integer dormitorios,
-                                                        @PageableDefault(size = 5, sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(new PagedModel<>(imovelService.pesquisarPorExemplo(tipo, cidade, dormitorios, pageable)));
+    public ResponseEntity<PagedModel<ImovelOutput>> pesquisar(
+            @ModelAttribute ImovelFiltro filtro,
+            @PageableDefault(size = 5, sort = "id") Pageable pageable) {
+        Imovel exemplo = imovelMapper.toExemplo(filtro);
+        Page<ImovelOutput> pagina = imovelService.pesquisarPorExemplo(exemplo, pageable)
+                .map(imovelMapper::toOutput);
+        return ResponseEntity.ok(new PagedModel<>(pagina));
     }
 
     //GET /imoveis/{id} -> 200 ou 404
     @GetMapping("/{id}")
-    public ResponseEntity<Imovel> buscarPorId(@PathVariable Integer id) {
-        return ResponseEntity.ok(imovelService.buscarPorId(id));
+    public ResponseEntity<ImovelOutput> buscarPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(imovelMapper.toOutput(imovelService.buscarPorId(id)));
     }
 
-    //POST /imoveis -> 201 + header Location apontando para o novo recurso
+    //POST /imoveis -> 201 + header Location
     @PostMapping
-    public ResponseEntity<Imovel> criar(@Valid @RequestBody Imovel imovel) {
-        Imovel salvo = imovelService.salvar(imovel);
+    public ResponseEntity<ImovelOutput> criar(@Valid @RequestBody ImovelInput input) {
+        Imovel salvo = imovelService.salvar(imovelMapper.toEntity(input));
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(salvo.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(salvo);
+        return ResponseEntity.created(location).body(imovelMapper.toOutput(salvo));
     }
 
-    //PUT /imoveis/{id} -> 200, 400, 404, 409
+    //PUT /imoveis/{id} -> 200, 400, 404 ou 409
     @PutMapping("/{id}")
-    public ResponseEntity<Imovel> atualizar(@PathVariable Integer id, @Valid @RequestBody Imovel imovel) {
-        return ResponseEntity.ok(imovelService.atualizar(id, imovel));
+    public ResponseEntity<ImovelOutput> atualizar(@PathVariable Integer id,
+                                                  @Valid @RequestBody ImovelInput input) {
+        Imovel atualizado = imovelService.atualizar(id, imovelMapper.toEntity(input));
+        return ResponseEntity.ok(imovelMapper.toOutput(atualizado));
     }
 
-    //DELETE /imoveis/{id} -> 204, 404, 409
+    //DELETE /imoveis/{id} -> 204, 404 ou 409
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluir(@PathVariable Integer id) {
         imovelService.excluir(id);

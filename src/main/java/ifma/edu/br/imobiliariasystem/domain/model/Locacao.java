@@ -1,12 +1,6 @@
 package ifma.edu.br.imobiliariasystem.domain.model;
 
-import ifma.edu.br.imobiliariasystem.domain.ValidationGroups;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import jakarta.validation.groups.ConvertGroup;
-import jakarta.validation.groups.Default;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,23 +10,16 @@ import java.util.Objects;
 @Table(name = "locacao")
 public class Locacao {
 
-    @NotNull(groups = ValidationGroups.LocacaoId.class, message = "O id da locação é obrigatório")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //No JSON chega como "inquilino": {"id": 1}. O @Valid + @ConvertGroup valida
-    //só o id do cliente (grupo ClienteId), e não os outros campos dele.
-    @Valid
-    @ConvertGroup(from = Default.class, to = ValidationGroups.ClienteId.class)
-    @NotNull(message = "O inquilino é obrigatório")
+    //Validações de entrada ficam no LocacaoInput (api/dto); aqui só o mapeamento do banco.
+    //O inquilino e o imóvel chegam ao service só com o id e são carregados por ele.
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_inquilino", nullable = false)
     private Cliente inquilino;
 
-    @Valid
-    @ConvertGroup(from = Default.class, to = ValidationGroups.ImovelId.class)
-    @NotNull(message = "O imóvel é obrigatório")
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_imovel", nullable = false)
     private Imovel imovel;
@@ -41,34 +28,24 @@ public class Locacao {
     @Column(nullable = false)
     private Boolean ativo;
 
-    @NotNull(message = "A data de início é obrigatória")
     @Column(name = "data_inicio", nullable = false)
     private LocalDate data_inicio;
 
     //Obrigatória: sem ela não dá para calcular a quantidade de diárias
-    @NotNull(message = "A data final é obrigatória")
     @Column(name = "data_fim", nullable = false)
     private LocalDate data_fim;
 
-    @NotNull(message = "O dia de vencimento é obrigatório")
-    @Min(value = 1, message = "O dia de vencimento deve estar entre 1 e 31")
-    @Max(value = 31, message = "O dia de vencimento deve estar entre 1 e 31")
     @Column(name = "dia_vencimento", nullable = false)
     private Integer dia_vencimento;
 
-    @PositiveOrZero(message = "O percentual de multa não pode ser negativo")
-    @DecimalMax(value = "100.00", message = "O percentual de multa não pode passar de 100%")
-    @Digits(integer = 3, fraction = 2, message = "O percentual de multa deve ter no máximo 2 casas decimais")
     @Column(name = "perc_multa", precision = 5, scale = 2)
     private BigDecimal perc_multa;
 
     //Calculado pelo service (valor_diaria do imóvel x quantidade de diárias).
-    //READ_ONLY: aparece na resposta, mas o Jackson ignora se vier no JSON da requisição
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    //Não existe no LocacaoInput, então o cliente da API não consegue enviá-lo
     @Column(name = "valor_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal valor_total;
 
-    @Size(max = 500, message = "A observação deve ter no máximo 500 caracteres")
     @Column(length = 500)
     private String obs;
 

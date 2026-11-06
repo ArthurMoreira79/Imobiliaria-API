@@ -1,11 +1,6 @@
 package ifma.edu.br.imobiliariasystem.domain.model;
 
-import ifma.edu.br.imobiliariasystem.domain.ValidationGroups;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
-import jakarta.validation.groups.ConvertGroup;
-import jakarta.validation.groups.Default;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,26 +15,19 @@ public class Aluguel {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    //No JSON chega como "locacao": {"id": 1}. Mesmo esquema da Locação com Cliente e Imóvel: 
-    //o @ConvertGroup valida só o id da locação
-    @Valid 
-    @ConvertGroup (from = Default.class, to = ValidationGroups.LocacaoId.class)
-    @NotNull (message = "A locação é obrigatória")
+    //Validações de entrada ficam no AluguelInput (api/dto). A locação chega ao service
+    //só com o id e é carregada por ele.
     @ManyToOne (optional = false)
     @JoinColumn (name = "id_locacao", nullable = false)
     private Locacao locacao;
 
-    @NotNull (message = "A data de vencimento é obrigatória")
     @Column (name = "dt_vencimento", nullable = false)
     private LocalDate dt_vencimento;
 
     //Nulo significa que a parcela não foi paga
-    @PositiveOrZero (message = "O valor pago não pode ser negativo")
-    @Digits (integer = 10, fraction = 2, message = "O valor pago deve ter no máximo 10 dígitos inteiros e 2 casas decimais")
     @Column (name = "valor_pago", precision = 12, scale = 2)
     private BigDecimal valor_pago;
 
-    @Size (max = 500, message = "A observação deve ter no máximo 500 caracteres")
     @Column (length = 500)
     private String obs;
 

@@ -40,15 +40,10 @@ public class ImovelService {
         return imovelRepository.findAll(pageable);
     }
 
-    //Query by Example: monta um imóvel "modelo" só com os filtros informados.
+    //Query by Example: recebe um imóvel "modelo" só com os filtros informados.
     //Campos nulos são ignorados, então cada filtro é opcional
     @Transactional(readOnly = true)
-    public Page<Imovel> pesquisarPorExemplo(String tipo, String cidade, Integer dormitorios, Pageable pageable) {
-        Imovel exemplo = new Imovel();
-        exemplo.setTipo_imovel(tipo);
-        exemplo.setCidade(cidade);
-        exemplo.setDormitorios(dormitorios);
-
+    public Page<Imovel> pesquisarPorExemplo(Imovel exemplo, Pageable pageable) {
         //Textos: busca parcial (contém) e sem diferenciar maiúsculas/minúsculas.
         //dormitorios: número, então a comparação é exata
         ExampleMatcher matcher = ExampleMatcher.matching()
