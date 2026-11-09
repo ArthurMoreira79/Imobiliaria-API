@@ -56,6 +56,12 @@ public class ApiExceptionHandler {
                 "Não é possível ordenar por '" + ex.getPropertyName() + "': o campo não existe.", null);
     }
 
+    // 403 - autenticado, mas tentando acessar um registro de outro usuário (ex: locação de outro cliente)
+    @ExceptionHandler(AcessoNegadoException.class)
+    public ResponseEntity<ErroResposta> tratarAcessoNegado(AcessoNegadoException ex) {
+        return montarResposta(HttpStatus.FORBIDDEN, "Acesso negado", ex.getMessage(), null);
+    }
+
     // 404 - registro não encontrado
     @ExceptionHandler(EntidadeNaoEncontradaException.class)
     public ResponseEntity<ErroResposta> tratarNaoEncontrado(EntidadeNaoEncontradaException ex) {

@@ -3,6 +3,7 @@ package ifma.edu.br.imobiliariasystem.domain.service;
 import ifma.edu.br.imobiliariasystem.domain.exception.*;
 import ifma.edu.br.imobiliariasystem.domain.model.Locacao;
 import ifma.edu.br.imobiliariasystem.domain.repository.LocacaoRepository;
+import ifma.edu.br.imobiliariasystem.security.UsuarioLogado;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,28 +19,46 @@ public class LocacaoService {
     private final LocacaoRepository locacaoRepository;
     private final ClienteService clienteService;
     private final ImovelService imovelService;
+    private final UsuarioLogado usuarioLogado;
 
-    public LocacaoService(LocacaoRepository locacaoRepository, ClienteService clienteService, ImovelService imovelService) {
+    public LocacaoService(LocacaoRepository locacaoRepository, ClienteService clienteService, ImovelService imovelService, UsuarioLogado usuarioLogado) {
         this.locacaoRepository = locacaoRepository;
         this.clienteService = clienteService;
         this.imovelService = imovelService;
+        this.usuarioLogado = usuarioLogado;
     }
 
+    //ADMIN e ATENDENTE veem todas; CLIENTE vê só as locações em que é o inquilino
     @Transactional(readOnly = true)
     public List<Locacao> listarTodos() {
+        if (usuarioLogado.isApenasCliente()) {
+            return locacaoRepository.findByInquilinoId(usuarioLogado.getIdCliente());
+        }
         return locacaoRepository.findAll();
     }
 
     @Transactional(readOnly = true)
     public Locacao buscarPorId(Integer id) {
-        return locacaoRepository.findById(id)
+        Locacao locacao = locacaoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Locação de id " + id + " não encontrada"));
+
+        verificarAcesso(locacao);
+        return locacao;
     }
 
     @Transactional
     public Locacao salvar(Locacao locacao) {
         //garante INSERT: se o JSON trouxer um id, o save faria UPDATE em outra locação
         locacao.setId(null);
+
+        //CLIENTE só cadastra locação para si mesmo, e ela nasce pendente:
+        //quem confirma (e ocupa o imóvel) é o ADMIN ou o ATENDENTE, pelo /confirmar
+        if (usuarioLogado.isApenasCliente()) {
+            if (!locacao.getInquilino().getId().equals(usuarioLogado.getIdCliente())) {
+                throw new AcessoNegadoException("Você só pode cadastrar locações para você mesmo");
+            }
+            locacao.setAtivo(false);   //tire esta linha se preferir que nasça confirmada
+        }
 
         //ativo = confirmada. Se o JSON não disser nada, a locação já nasce confirmada
         if (locacao.getAtivo() == null) {
@@ -109,6 +128,14 @@ public class LocacaoService {
 
         locacao.setAtivo(false);
         return locacaoRepository.save(locacao);
+    }
+
+    //CLIENTE só acessa locações em que ele é o inquilino. ADMIN e ATENDENTE acessam qualquer uma.
+    private void verificarAcesso(Locacao locacao) {
+        if (usuarioLogado.isApenasCliente()
+                && !locacao.getInquilino().getId().equals(usuarioLogado.getIdCliente())) {
+            throw new AcessoNegadoException("Você só pode acessar as suas próprias locações");
+        }
     }
 
     @Transactional

@@ -40,4 +40,7 @@ public interface LocacaoRepository extends JpaRepository<Locacao, Integer> {
               AND l.data_fim >= :hoje
             """)
     long contarAtivasOuFuturas(@Param("idImovel") Integer idImovel, @Param("hoje") LocalDate hoje);
+
+    //Locações de um inquilino. Query method: "InquilinoId" vira l.inquilino.id; (funciona porque inquilino e id não têm "_")
+    List<Locacao> findByInquilinoId(Integer idInquilino);
 }
