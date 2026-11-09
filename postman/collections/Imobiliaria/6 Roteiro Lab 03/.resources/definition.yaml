@@ -1,0 +1,4 @@
+$kind: collection
+name: '6 Roteiro Lab 03'
+order: 6000
+description: 'Lab 03: DTOs, autenticação HTTP Basic e autorização por perfil, na ordem dos cenários 2.4 do PDF. Usuários da V12 (senha na variável senhaTeste): admin (ADMIN), atendente (ATENDENTE), ana (CLIENTE, cliente 1), bruno (CLIENTE, cliente 2). Pode rodar depois do roteiro do Lab 02 ou sozinha, e mais de uma vez: tudo o que cria é excluído no fim de cada pasta. Cenário 7 (hash no banco) é conferido no MySQL: SELECT login, senha FROM usuarios;'

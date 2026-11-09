@@ -1,0 +1,4 @@
+$kind: collection
+name: '4 Usuarios e senhas'
+order: 4000
+description: 'Cenários 2.4.7 e 2.4.8 e regras de 2.1.8 e 2.3: cadastro só pelo ADMIN, senha guardada como hash e nunca devolvida, ninguém altera os próprios privilégios.'

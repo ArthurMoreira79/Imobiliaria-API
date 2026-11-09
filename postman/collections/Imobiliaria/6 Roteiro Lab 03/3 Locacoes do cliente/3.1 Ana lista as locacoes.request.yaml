@@ -1,0 +1,21 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/locacoes'
+order: 1000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'ana'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Só locações do cliente 1", () => {
+        const locacoes = pm.response.json();
+        pm.expect(locacoes).to.not.be.empty;
+        locacoes.forEach(l => pm.expect(l.inquilino.id).to.eql(1));
+      });

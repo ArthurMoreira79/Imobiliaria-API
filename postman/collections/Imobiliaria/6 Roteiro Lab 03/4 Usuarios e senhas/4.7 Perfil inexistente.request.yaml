@@ -1,0 +1,29 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/usuarios'
+order: 7000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "login": "chefe",
+      "senha": "teste123",
+      "perfis": [
+        "CHEFE"
+      ]
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'admin'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 404", () => pm.response.to.have.status(404));

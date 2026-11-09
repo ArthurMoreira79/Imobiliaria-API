@@ -1,0 +1,17 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/1/confirmar'
+order: 7000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'ana'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 403", () => pm.response.to.have.status(403));
+      pm.test("JSON de erro: Acesso negado", () => pm.expect(pm.response.json().titulo).to.eql("Acesso negado"));

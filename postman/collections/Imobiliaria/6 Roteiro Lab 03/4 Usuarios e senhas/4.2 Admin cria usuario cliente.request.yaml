@@ -1,0 +1,41 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/usuarios'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "login": "carla",
+      "senha": "carla123",
+      "perfis": [
+        "CLIENTE"
+      ],
+      "cliente": {
+        "id": 3
+      }
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'admin'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      pm.test("Resposta sem senha nem hash", () => {
+        pm.expect(pm.response.text()).to.not.include("senha");
+        pm.expect(pm.response.text()).to.not.include("$2a$");
+      });
+      pm.test("Perfil e cliente", () => {
+        pm.expect(pm.response.json().perfis).to.eql(["CLIENTE"]);
+        pm.expect(pm.response.json().cliente.nome_cliente).to.eql("Carla Mendes");
+      });
+      pm.collectionVariables.set("idUsuarioCarla", pm.response.json().id);

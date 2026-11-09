@@ -1,0 +1,20 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/locacoes'
+order: 3000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'atendente'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Locações de vários inquilinos", () => {
+        const inquilinos = new Set(pm.response.json().map(l => l.inquilino.id));
+        pm.expect(inquilinos.has(1) && inquilinos.has(2)).to.be.true;
+      });

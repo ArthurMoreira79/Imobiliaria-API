@@ -1,0 +1,17 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/locacoes/1'
+order: 3000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'atendente'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Inquilino só com id e nome (sem CPF, telefone, e-mail)", () => pm.expect(Object.keys(pm.response.json().inquilino).sort()).to.eql(["id", "nome_cliente"]));

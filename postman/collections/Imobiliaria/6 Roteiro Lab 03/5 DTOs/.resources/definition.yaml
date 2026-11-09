@@ -1,0 +1,4 @@
+$kind: collection
+name: '5 DTOs'
+order: 5000
+description: 'Parte 1 do Lab 03: o cliente da API não controla id nem valores calculados, e as respostas não expõem dados desnecessários.'

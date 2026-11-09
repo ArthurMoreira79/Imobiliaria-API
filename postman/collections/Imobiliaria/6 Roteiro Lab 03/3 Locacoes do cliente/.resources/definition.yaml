@@ -1,0 +1,4 @@
+$kind: collection
+name: '3 Locacoes do cliente'
+order: 3000
+description: 'Cenário 2.4.6: o cliente só consulta e cadastra as próprias locações; ADMIN e ATENDENTE veem todas.'

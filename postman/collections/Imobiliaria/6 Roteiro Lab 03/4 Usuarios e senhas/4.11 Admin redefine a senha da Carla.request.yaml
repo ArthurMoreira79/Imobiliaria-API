@@ -1,0 +1,36 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/usuarios/{{idUsuarioCarla}}'
+order: 11000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "login": "carla",
+      "senha": "nova12345",
+      "perfis": [
+        "CLIENTE"
+      ],
+      "cliente": {
+        "id": 3
+      }
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'admin'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Resposta sem senha nem hash", () => {
+        pm.expect(pm.response.text()).to.not.include("senha");
+        pm.expect(pm.response.text()).to.not.include("$2a$");
+      });

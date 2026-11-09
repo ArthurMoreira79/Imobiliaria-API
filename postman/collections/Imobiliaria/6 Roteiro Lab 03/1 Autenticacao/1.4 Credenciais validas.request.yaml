@@ -1,0 +1,17 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis'
+order: 4000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'ana'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Lista de imóveis", () => pm.expect(pm.response.json()).to.be.an("array").that.is.not.empty);

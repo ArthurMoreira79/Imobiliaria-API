@@ -1,0 +1,30 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/usuarios'
+order: 5000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "login": "semvinculo",
+      "senha": "teste123",
+      "perfis": [
+        "CLIENTE"
+      ]
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'admin'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 409", () => pm.response.to.have.status(409));
+      pm.test("Mensagem", () => pm.expect(pm.response.json().mensagem).to.include("vinculado a um cliente"));

@@ -1,0 +1,35 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/1'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 1
+      },
+      "imovel": {
+        "id": 3
+      },
+      "data_inicio": "2027-03-01",
+      "data_fim": "2027-03-05",
+      "dia_vencimento": 5,
+      "ativo": true
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'ana'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 403", () => pm.response.to.have.status(403));
+      pm.test("JSON de erro: Acesso negado", () => pm.expect(pm.response.json().titulo).to.eql("Acesso negado"));

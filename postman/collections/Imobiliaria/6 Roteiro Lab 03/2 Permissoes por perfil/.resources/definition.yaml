@@ -1,0 +1,4 @@
+$kind: collection
+name: '2 Permissoes por perfil'
+order: 2000
+description: 'Cenários 2.4.3 a 2.4.5: operações permitidas e negadas conforme a matriz de permissões.'

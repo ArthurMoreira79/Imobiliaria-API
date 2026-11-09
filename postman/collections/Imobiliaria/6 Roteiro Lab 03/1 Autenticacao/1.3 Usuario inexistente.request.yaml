@@ -1,0 +1,18 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/imoveis'
+order: 3000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'fantasma'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 401", () => pm.response.to.have.status(401));
+      pm.test("JSON de erro: Não autenticado", () => pm.expect(pm.response.json().titulo).to.eql("Não autenticado"));
+      pm.test("Mesma mensagem da senha incorreta (não revela se o login existe)", () => pm.expect(pm.response.json().mensagem).to.include("login e senha"));

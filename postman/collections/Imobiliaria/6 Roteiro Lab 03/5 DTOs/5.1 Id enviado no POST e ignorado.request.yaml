@@ -1,0 +1,32 @@
+$kind: http-request
+method: POST
+url: '{{baseUrl}}/clientes'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "id": 1,
+      "nome_cliente": "Cliente Teste DTO",
+      "cpf": "30199988877",
+      "telefone": null,
+      "email": null,
+      "dt_nascimento": "1990-01-01"
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'atendente'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      pm.test("Ganhou um id novo (não sobrescreveu o cliente 1)", () => pm.expect(pm.response.json().id).to.not.eql(1));
+      pm.collectionVariables.set("idClienteDto", pm.response.json().id);

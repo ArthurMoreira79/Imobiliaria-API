@@ -1,0 +1,17 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/locacoes/{{idLocacaoAna}}/confirmar'
+order: 8000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'atendente'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 200", () => pm.response.to.have.status(200));
+      pm.test("Confirmada", () => pm.expect(pm.response.json().ativo).to.eql(true));

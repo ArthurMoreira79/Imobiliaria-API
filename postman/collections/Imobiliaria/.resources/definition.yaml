@@ -1,6 +1,22 @@
 $kind: collection
 name: 'Imobiliaria'
-description: 'API REST da imobiliária (Labs 01 e 02 de Desenvolvimento Web II). Antes do roteiro, recrie o banco para os ids baterem.'
+description: 'API REST da imobiliária (Labs 01, 02 e 03 de Desenvolvimento Web II). Antes do roteiro, recrie o banco para os ids baterem. Desde o Lab 03 a API exige HTTP Basic: a coleção usa o admin por padrão, e as requisições do roteiro do Lab 03 informam o próprio usuário. As senhas abaixo são só dos usuários de teste da migration V12.'
 variables:
   - key: baseUrl
     value: 'http://localhost:8080'
+  - key: senhaTeste
+    value: 'senha123'
+    description: 'Senha dos usuários de teste da V12 (admin, atendente, ana, bruno)'
+  - key: senhaCarla
+    value: 'carla123'
+    description: 'Senha da usuária criada no teste 4.2 do roteiro do Lab 03'
+  - key: senhaCarlaNova
+    value: 'nova12345'
+    description: 'Senha redefinida pelo admin no teste 4.11'
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'admin'
+    - key: password
+      value: '{{senhaTeste}}'

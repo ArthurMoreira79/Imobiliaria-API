@@ -50,4 +50,9 @@ public class UsuarioLogado {
     private Authentication autenticacao() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
+
+    //Login de quem está fazendo a requisição
+    public String getLogin() {
+        return autenticacao().getName();
+    }
 }

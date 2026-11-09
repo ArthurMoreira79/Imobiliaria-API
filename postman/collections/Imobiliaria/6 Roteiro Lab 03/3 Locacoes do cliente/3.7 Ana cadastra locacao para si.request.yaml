@@ -1,0 +1,37 @@
+$kind: http-request
+description: 'O JSON pede ativo = true, mas locação feita por CLIENTE nasce pendente: quem confirma é a imobiliária.'
+method: POST
+url: '{{baseUrl}}/locacoes'
+order: 7000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "inquilino": {
+        "id": 1
+      },
+      "imovel": {
+        "id": 3
+      },
+      "data_inicio": "2027-03-01",
+      "data_fim": "2027-03-05",
+      "dia_vencimento": 5,
+      "ativo": true
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'ana'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 201", () => pm.response.to.have.status(201));
+      pm.test("Nasce pendente, mesmo pedindo ativo = true", () => pm.expect(pm.response.json().ativo).to.eql(false));
+      pm.collectionVariables.set("idLocacaoAna", pm.response.json().id);

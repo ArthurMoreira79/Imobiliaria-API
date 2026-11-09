@@ -1,0 +1,17 @@
+$kind: http-request
+method: GET
+url: '{{baseUrl}}/locacoes'
+order: 12000
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'carla'
+    - key: password
+      value: '{{senhaCarla}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 401", () => pm.response.to.have.status(401));
+      pm.test("JSON de erro: Não autenticado", () => pm.expect(pm.response.json().titulo).to.eql("Não autenticado"));

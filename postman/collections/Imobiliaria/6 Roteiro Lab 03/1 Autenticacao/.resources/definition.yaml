@@ -1,0 +1,4 @@
+$kind: collection
+name: '1 Autenticacao'
+order: 1000
+description: 'Cenários 2.4.1 a 2.4.3: sem credenciais, credenciais erradas e credenciais válidas.'

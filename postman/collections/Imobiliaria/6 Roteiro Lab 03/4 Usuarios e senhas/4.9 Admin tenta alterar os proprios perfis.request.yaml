@@ -1,0 +1,29 @@
+$kind: http-request
+method: PUT
+url: '{{baseUrl}}/usuarios/{{idAdmin}}'
+order: 9000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "login": "admin",
+      "perfis": [
+        "ATENDENTE"
+      ]
+    }
+auth:
+  type: basic
+  credentials:
+    - key: username
+      value: 'admin'
+    - key: password
+      value: '{{senhaTeste}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status 403", () => pm.response.to.have.status(403));
+      pm.test("JSON de erro: Acesso negado", () => pm.expect(pm.response.json().titulo).to.eql("Acesso negado"));
